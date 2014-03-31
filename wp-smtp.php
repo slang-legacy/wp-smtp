@@ -4,7 +4,7 @@ Plugin Name: WP SMTP
 Description: Send emails via SMTP instead of the PHP mail() function.
 Author: Sean Lang
 Author URI: http://slang.cx
-Version: 2
+Version: 2.1
 GitHub Plugin URI: slang800/wp-smtp
 */
 

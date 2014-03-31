@@ -4,8 +4,12 @@ function wp_smtp_admin() {
 }
 
 function wp_smtp_page() {
+	$ws_nonce = wp_create_nonce('my_ws_nonce');
 	global $wsOptions;
-	if (isset($_POST['wp_smtp_update'])) {
+	if (isset($_POST['wp_smtp_update']) && isset($_POST['wp_smtp_nonce_update'])) {
+		if (!wp_verify_nonce(trim($_POST['wp_smtp_nonce_update']),'my_ws_nonce')) {
+			wp_die('Security check not passed!');
+		}
 		$wsOptions = array();
 		$wsOptions["from"] = trim($_POST['wp_smtp_from']);
 		$wsOptions["fromname"] = trim($_POST['wp_smtp_fromname']);
@@ -25,7 +29,10 @@ function wp_smtp_page() {
 			echo '<div id="message" class="updated fade"><p><strong>' . __("Options saved.","WP-SMTP") . '</strong></p></div>';
 		}
 	}
-	if (isset($_POST['wp_smtp_test'])) {
+	if (isset($_POST['wp_smtp_test']) && isset($_POST['wp_smtp_nonce_test'])){
+		if (!wp_verify_nonce(trim($_POST['wp_smtp_nonce_test']),'my_ws_nonce')){
+			wp_die('Security check not passed!');
+		}
 		$to = trim($_POST['wp_smtp_to']);
 		$subject = trim($_POST['wp_smtp_subject']);
 		$message = trim($_POST['wp_smtp_message']);
@@ -189,6 +196,7 @@ function wp_smtp_page() {
 	</table>
 	<p class="submit">
 		<input type="hidden" name="wp_smtp_update" value="update" />
+		<input type="hidden" name="wp_smtp_nonce_update" value="<?php echo $ws_nonce; ?>" />
 		<input type="submit" class="button-primary" name="Submit" value="<?php _e('Save Changes'); ?>" />
 	</p>
 	</form>
@@ -227,11 +235,11 @@ function wp_smtp_page() {
 		</table>
 		<p class="submit">
 			<input type="hidden" name="wp_smtp_test" value="test" />
+			<input type="hidden" name="wp_smtp_nonce_test" value="<?php echo $ws_nonce; ?>" />
 			<input type="submit" class="button-primary" value="<?php _e('Send Test','WP-SMTP'); ?>" />
 		</p>
 	</form>
 </div>
-
 <?php
 }
 add_action('admin_menu', 'wp_smtp_admin');
